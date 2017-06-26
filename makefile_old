@@ -1,0 +1,103 @@
+
+########################
+
+
+PROGRAM = simu
+OBJECTS = simu.o 
+
+
+######################### external packages
+CFITSIO = /SciApps/NEW/cfitsio/macintel7/cfitsio_3.310/
+VBBIN = /Users/snovati/ipac/prog/vbbin/v1.1.1/
+
+###########################################################
+# Flags given to C++ compiler in front of SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+XFLAGSF = 
+
+# Flags given to C++ compiler after SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+XFLAGSB = 
+
+# Flags given to C compiler in front of SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CFLAGSF = -O2 -I. -Df2cFortran 
+
+# Flags given to C compiler after SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CFLAGSB = 
+
+# Flags given to G77 compiler in front of SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FFLAGSF = -O2 -I. -Df2cFortran 
+#FFLAGSF = -O2 -I. -Df2cFortran 
+
+# Flags given to G77 compiler after SOURCE FILE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FFLAGSB = 
+
+# C++ compiler is next one
+# ~~~~~~~~~~~~~~~~~~~~~~
+XCOMPIL =
+
+# C compiler is next one
+# ~~~~~~~~~~~~~~~~~~~~~~
+CCOMPIL = gcc
+
+# FORTRAN compiler is next one
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#F77COMP = gfortran
+F77COMP = /sw2/bin/gfortran
+
+# And finaly PROGRAM is producted by LINKER, next is as LINKER
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#LINKING = gfortran
+LINKING = /sw2/bin/gfortran
+
+# Linking Flags
+# ~~~~~~~~~~~~~
+LFLAGSF = -O2 -I. -Df2cFortran
+
+# LIBS
+# ~~~~~~~~~~~~~
+#LFLAGSB = -lm 
+LFLAGSB = -L$(CFITSIO) -lcfitsio \
+	-L$(CERNLIB) \
+        -lmathlib -lgraflib -lgrafX11 -lkernlib -lpacklib \
+	-L$(VBBIN) -lvbbin \
+	-L/usr/lib/ -lm -lstdc++
+#-lg2c # C++ (the magic for linux)
+#-lstdc++ # C++ (seems to be working for mac)
+
+# ////////////////////////
+#       Procedure             Don't touch if you don't know what this is!
+# ////////////////////////
+
+.cpp.o: 
+	$(XCOMPIL) $(XFLAGSF) -c $< $(XFLAGSB)
+
+.c.o: 
+	$(CCOMPIL) $(CFLAGSF) -c $< $(CFLAGSB)
+
+.cc.o: 
+	$(CCOMPIL) $(CFLAGSF) -c $< $(CFLAGSB)
+
+.f.o: 
+	$(F77COMP) $(FFLAGSF) -c $< $(FFLAGSB)
+
+.F.o: 
+	$(F77COMP) $(FFLAGSF) -c $< $(FFLAGSB)
+
+
+all: $(PROGRAM) 
+
+
+$(PROGRAM) : $(OBJECTS)
+	$(LINKING) -o $(PROGRAM) $(LFLAGSF) $(OBJECTS) $(LFLAGSB)
+
+
+clean: 
+	rm -rf *.o $(PROGRAM)
+
+#clear: 
+#	rm -rf *~
